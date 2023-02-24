@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Result-Analysis</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        text-decoration: none;
+        font-family: sans-serif;
+      }
+      nav {
+        width: 100vw;
+        height: auto;
+        background-color: antiquewhite;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      nav h1 {
+        text-align: center;
+        color: red;
+      }
+      nav form {
+        padding: 10px;
+      }
+      nav input {
+        padding: 10px;
+        font-size: 15px;
+        background-color: rgb(133, 233, 233);
+        border-radius: 20px;
+      }
+
+      #sub-code {
+        width: 100vw;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 20px;
+        background-color: #bac6d0;
+        position: sticky;
+        top: 0;
+      }
+
+      #sub-code button {
+        padding: 10px;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 900;
+      }
+      #sub-code button a {
+        font-size: 15px;
+      }
+      .box {
+        width: 100vw;
+        padding: 10px;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        margin-bottom: 50px;
+      }
+
+      #mark-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 50px;
+        padding: 10px;
+      }
+
+      #sub-res {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: center;
+      }
+      #score {
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 30px;
+      }
+      #home {
+        width: 80px;
+        height: 40px;
+        padding: 10px;
+        border-radius: 10px;
+        position: absolute;
+        top: 10px;
+        left: 20px;
+      }
+      #home a {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <button id="home"><a href="/">HOME</a></button>
+      <h1>RESULT ANALYSIS</h1>
+      <form action="/postmarks" method="post" enctype="multipart/form-data">
+        <label for="file">Upload the Excel Marks Sheet Here </label>
+        <input type="file" name="file" id="file" />
+        <input type="submit" value="Upload" />
+      </form>
+    </nav>
+    <div id="sub-code">
+      {% for code in codes %}
+      <div>
+        <button>
+          <a href="{{'/result?code=%s'%code}}" class="btn">{{code}}</a>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if res %}
+    <div class="box">
+      <img src="/static/internal_marks.png" alt="Chart" />
+      <img src="/static/external_marks.png" alt="Chart" />
+    </div>
+    <div class="box">
+      <img src="/static/total_marks.png" alt="Chart" />
+      <div id="mark-box">
+        <h3>Marks-Grade Mapping</h3>
+        <ul>
+          <li>S : m >= 90</li>
+          <li>A : 80 <= m < 90</li>
+          <li>B : 70 <= m < 80</li>
+          <li>C : 60 <= m < 70</li>
+          <li>D : 45 <= m < 60</li>
+          <li>E : 40 <= m < 45</li>
+          <li>F : m < 40</li>
+        </ul>
+        <div id="sub-res">
+          <h3>Subject Result</h3>
+          <p>TOTAL STRENGTH : {{res[0]+res[1]}}</p>
+          <p>NUMBER OF STUDENTS PASSED : {{res[0]}}</p>
+          <p>NUMBER OF STUDENTS FAILED : {{res[1]}}</p>
+          <p>PASSING PERCENTAGE : {{"%.2f"%(res[0]/(res[0]+res[1])*100)}}%</p>
+        </div>
+      </div>
+    </div>
+    <div id="score">
+      <h2>TOP 5 SCORING STUDENTS - {{cur_code}}</h2>
+      <table border="1">
+        <thead>
+          <th>SL.NO</th>
+          <th>NAME</th>
+          <th>USN</th>
+          <th>INTERNAL MARKS</th>
+          <th>EXTERNAL MARKS</th>
+          <th>TOTAL MARKS</th>
+          <th>RESULT</th>
+        </thead>
+        <tbody>
+          {% for i,row in top.iterrows() %}
+          <tr>
+            <td>{{i+2}}</td>
+            <td>{{row["NAME"]}}</td>
+            <td>{{row["USN"]}}</td>
+            <td>{{row[cur_code+" - INTERNAL MARKS"]}}</td>
+            <td>{{row[cur_code+" - EXTERNAL MARKS"]}}</td>
+            <td>{{row[cur_code+" - TOTAL MARKS"]}}</td>
+            <td>{{row[cur_code+" - RESULT"]}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h2>BOTTOM 5 SCORING STUDENTS - {{cur_code}}</h2>
+      <table border="1">
+        <thead>
+          <th>SL.NO</th>
+          <th>NAME</th>
+          <th>USN</th>
+          <th>INTERNAL MARKS</th>
+          <th>EXTERNAL MARKS</th>
+          <th>TOTAL MARKS</th>
+          <th>RESULT</th>
+        </thead>
+        <tbody>
+          {% for i,row in bottom.iterrows() %}
+          <tr>
+            <td>{{i+2}}</td>
+            <td>{{row["NAME"]}}</td>
+            <td>{{row["USN"]}}</td>
+            <td>{{row[cur_code+" - INTERNAL MARKS"]}}</td>
+            <td>{{row[cur_code+" - EXTERNAL MARKS"]}}</td>
+            <td>{{row[cur_code+" - TOTAL MARKS"]}}</td>
+            <td>{{row[cur_code+" - RESULT"]}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </body>
+</html>
