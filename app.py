@@ -308,4 +308,4 @@ def postmarks():
         return render_template("home.html", codes=sub_codes)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False, host='0.0.0.0')
