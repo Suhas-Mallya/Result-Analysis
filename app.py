@@ -270,7 +270,7 @@ def grade():
     
     top_cgpa = sorted_data_cgpa.head(5)
     bottom_cgpa = sorted_data_cgpa.tail(5)
-    
+
     return render_template("home2.html", cur_code=code, codes=sub_codes, res=class_res, top_cgpa=top_cgpa, top_sgpa=top_sgpa, bottom_cgpa=bottom_cgpa, bottom_sgpa=bottom_sgpa)
 
 @app.route('/result')
@@ -293,7 +293,6 @@ def result():
 def postgrade():
     if request.method == 'POST':
         f = request.files['file']
-        f.save(f.filename)
         global data
         data = pd.read_excel(f)
         sub_codes = extract_from_headers(data.columns)        
@@ -303,7 +302,6 @@ def postgrade():
 def postmarks():
     if request.method == 'POST':
         f = request.files['file']
-        f.save(f.filename)
         global data
         data = pd.read_excel(f)
         sub_codes = extract_from_headers(data.columns)        
